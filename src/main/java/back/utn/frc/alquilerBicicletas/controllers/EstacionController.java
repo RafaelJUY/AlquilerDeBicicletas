@@ -19,9 +19,17 @@ public class EstacionController {
 
 
     @GetMapping
-    public ResponseEntity<List<Estacion>> getAll() {
-        List<Estacion> values = this.estacionService.getAll();
+    public ResponseEntity<List<Estacion>> findAll() {
+        List<Estacion> values = this.estacionService.findAll();
         return ResponseEntity.ok(values);
+    }
+
+    @GetMapping("/masCercana")
+    public ResponseEntity<Estacion> findEstacionCercana(@RequestParam("latitud") double latitud,
+                                                        @RequestParam("longitud") double longitud) {
+        Estacion estacionCercana = this.estacionService.findEstacionCercana(latitud, longitud);
+        return ResponseEntity.ok(estacionCercana);
+
     }
 
 }

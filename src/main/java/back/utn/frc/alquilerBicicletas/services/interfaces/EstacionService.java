@@ -5,5 +5,7 @@ import back.utn.frc.alquilerBicicletas.entities.Estacion;
 import java.util.List;
 
 public interface EstacionService {
-    public List<Estacion> getAll();
+    List<Estacion> findAll();
+
+    Estacion findEstacionCercana(double latitud, double longitud);
 }

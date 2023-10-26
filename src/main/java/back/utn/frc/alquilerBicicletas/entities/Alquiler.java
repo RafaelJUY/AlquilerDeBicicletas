@@ -25,13 +25,15 @@ public class Alquiler {
     @Column(name = "ESTADO")
     private boolean estado;
 
-    @Column(name = "ESTACION_RETIRO")
-    private int estacionRetiro;
+    @JoinColumn(name = "ESTACION_RETIRO")
+    @OneToOne
+    private Estacion estacionRetiro;
 
-    @Column(name = "ESTACION_DEVOLUCION")
-    private int estacionDevolucion;
+    @JoinColumn(name = "ESTACION_DEVOLUCION")
+    @OneToOne
+    private Estacion estacionDevolucion;
 
-    @Column(name = "ESTACION_DEVOLUCION")
+    @Column(name = "FECHA_HORA_RETIRO")
     private LocalDateTime fechaHoraRetiro;
 
     @Column(name = "FECHA_HORA_DEVOLUCION")
@@ -40,6 +42,7 @@ public class Alquiler {
     @Column(name = "MONTO")
     private double monto;
 
-    @Column(name = "ID_TARIFA")
-    private long idTarifa;
+    @JoinColumn(name = "ID_TARIFA")
+    @OneToOne
+    private Tarifa tarifa;
 }
