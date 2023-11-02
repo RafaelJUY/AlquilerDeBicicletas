@@ -1,11 +1,11 @@
 package com.tpi.bda.microservicioalquileres.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "TARIFAS")
@@ -16,6 +16,7 @@ public class Tarifa {
             pkColumnName = "name", valueColumnName = "seq",
             pkColumnValue = "id",
             initialValue = 1, allocationSize = 1)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(name = "TIPO_TARIFA")

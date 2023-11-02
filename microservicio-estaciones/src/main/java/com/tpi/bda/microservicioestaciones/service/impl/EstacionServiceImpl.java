@@ -39,4 +39,18 @@ public class EstacionServiceImpl implements IEstacionService {
 
         return estacionCercana;
     }
+    
+    public double calularDistanciaEstaciones(long idEstacion1, long idEstacion2){
+        Estacion estacion1 = findEstacionById(idEstacion1);
+        Estacion estacion2 = findEstacionById(idEstacion2);
+
+        double distancia = 110000 * Math.sqrt(Math.pow(estacion1.getLatitud() - estacion2.getLatitud(), 2) +
+                Math.pow(estacion1.getLongitud() - estacion2.getLongitud(),2));
+        
+        return distancia;
+    }
+
+    public Estacion findEstacionById(long idEstacion) {
+        return estacionRepository.findById(idEstacion).orElseThrow();
+    }
 }

@@ -26,7 +26,7 @@ public class Alquiler {
     private String idCliente;
 
     @Column(name = "ESTADO")
-    private boolean estado;
+    private Integer estado; //1: Iniciado, 2: Finalizado :)
 
 //    @JoinColumn(name = "ESTACION_RETIRO")
 //    @OneToOne

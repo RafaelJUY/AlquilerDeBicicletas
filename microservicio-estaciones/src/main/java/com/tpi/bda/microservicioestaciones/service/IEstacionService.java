@@ -8,4 +8,8 @@ public interface IEstacionService {
     List<Estacion> findAll();
 
     Estacion findEstacionCercana(double latitud, double longitud);
+
+    Estacion findEstacionById(long idEstacion);
+    
+    double calularDistanciaEstaciones(long idEstacion1, long idEstacion2);
 }
