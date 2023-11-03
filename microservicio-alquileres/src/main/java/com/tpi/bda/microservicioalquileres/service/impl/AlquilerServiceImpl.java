@@ -6,19 +6,19 @@ import com.tpi.bda.microservicioalquileres.model.entity.Tarifa;
 import com.tpi.bda.microservicioalquileres.repository.IAlquilerRepository;
 import com.tpi.bda.microservicioalquileres.service.IAlquilerService;
 import com.tpi.bda.microservicioalquileres.service.ITarifaService;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.ConnectException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 public class AlquilerServiceImpl implements IAlquilerService {
@@ -36,7 +36,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
     }
 
     @Override
-    public Alquiler iniciarAlquiler(long idEstacion, long idCliente) throws NoSuchElementException {
+    public Alquiler iniciarAlquiler(long idEstacion, long idCliente) throws NoSuchElementException, ResourceAccessException {
 
         Estacion e = this.buscarEstacion(idEstacion);
         LocalDateTime fechaHoraActual = LocalDateTime.now();
@@ -75,20 +75,28 @@ public class AlquilerServiceImpl implements IAlquilerService {
             horas += 1;
         }
 
-
-
         // Sumar el monto por la cantidad de horas
         monto += tarifa.getMontoHora() * horas;
 
-        return null;
+        // traer la distancia entre estaciones
+        double distancia = buscarDistanciaEntreEstaciones(alquiler.getEstacionRetiro().getId(),
+                alquiler.getEstacionDevolucion().getId());
+        long distanciaEnKm = (long) distancia / 1000;
+
+        monto += distanciaEnKm * tarifa.getMontokm();
+
+        alquiler.setMonto(monto);
+
+        return alquiler;
 
     }
 
-    public Estacion buscarEstacion(Long idEstacion) {
+    public Estacion buscarEstacion(Long idEstacion) throws ResourceAccessException{
         // Creación de una instancia de RestTemplate
         try {
             // Creación de la instancia de RequestTemplate
             RestTemplate template = new RestTemplate();
+
             // Creación de la entidad a enviar
             ResponseEntity<Estacion> res = template.getForEntity(
                     "http://localhost:8001/api/estaciones/{idEstacion}", Estacion.class, idEstacion
@@ -110,23 +118,22 @@ public class AlquilerServiceImpl implements IAlquilerService {
 
     }
 
-    public double buscarDistanciaEntreEstaciones(Long idEstacionRetiro, Long idEstacionDevolucion) {
+    public Double buscarDistanciaEntreEstaciones(Long idEstacionRetiro, Long idEstacionDevolucion) {
         // Creación de una instancia de RestTemplate
         try {
             // Creación de la instancia de RequestTemplate
             RestTemplate template = new RestTemplate();
+
+            // parametros
+            HashMap<String, String> params = new HashMap<>();
+            params.put("estacion1", idEstacionRetiro.toString());
+            params.put("estacion2", idEstacionDevolucion.toString());
+
             // Creación de la entidad a enviar
-/*            ResponseEntity<Estacion> res = template.getForEntity(
-                    "http://localhost:8001/api/estaciones/distanciaEntreEstaciones{idEstacion}", Estacion.class, idEstacion
-            );*/
-
-            ResponseEntity<Estacion> res = template.exchange(
-                    "http://localhost:8001/api/estaciones?estacion1={estacion1}&estacion2={estacion2}",
-                    HttpMethod.GET,
-                    entity,
-                    Estacion.class, estacion1, estacion2
+            String url = "http://localhost:8001/api/estaciones/distanciaEntreEstaciones/{estacion1}/{estacion2}";
+            ResponseEntity<Double> res = template.getForEntity(
+                    url, Double.class, params
             );
-
 
             // Se comprueba si el código de repuesta es de la familia 200
             if (res.getStatusCode().is2xxSuccessful()) {

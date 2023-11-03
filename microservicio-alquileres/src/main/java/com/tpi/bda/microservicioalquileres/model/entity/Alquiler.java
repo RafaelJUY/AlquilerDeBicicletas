@@ -28,14 +28,14 @@ public class Alquiler {
     @Column(name = "ESTADO")
     private Integer estado; //1: Iniciado, 2: Finalizado :)
 
-//    @JoinColumn(name = "ESTACION_RETIRO")
-//    @OneToOne
-    @Transient
+    @JoinColumn(name = "ESTACION_RETIRO")
+    @OneToOne
+//    @Transient
     private Estacion estacionRetiro;
 
-//    @JoinColumn(name = "ESTACION_DEVOLUCION")
-//    @OneToOne
-    @Transient
+    @JoinColumn(name = "ESTACION_DEVOLUCION")
+    @OneToOne
+//    @Transient
     private Estacion estacionDevolucion;
 
     @Column(name = "FECHA_HORA_RETIRO")

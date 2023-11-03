@@ -5,6 +5,7 @@ import com.tpi.bda.microservicioalquileres.service.IAlquilerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.net.ConnectException;
 import java.util.List;
@@ -25,7 +26,7 @@ public class AlquilerController {
         return ResponseEntity.ok(values);
     }
 
-    /*@PostMapping
+    @PostMapping
     public ResponseEntity<Alquiler> iniciarAlquiler(@RequestParam long idEstacion,
                                                     @RequestParam long idCliente) {
         try {
@@ -33,12 +34,12 @@ public class AlquilerController {
             return ResponseEntity.status(HttpStatus.CREATED).body(alquiler);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
-*//*        } catch (ConnectException ex) {
+        } catch (ResourceAccessException ex) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        }*//*
         }
 
-    }*/
+
+    }
 
 
     @PatchMapping
@@ -48,7 +49,7 @@ public class AlquilerController {
         return ResponseEntity.ok(alquiler);
     }
 
-    @GetMapping
+    @GetMapping("/filtrar")
     public ResponseEntity<List<Alquiler>> obtenerAlquileresPorMontos(@RequestParam("montoMin") double montoMin,
                                                                      @RequestParam("montoMax") double montoMax){
         List<Alquiler> alquileres = alquilerService.obtenerAlquileresPorMontos(montoMin, montoMax);
