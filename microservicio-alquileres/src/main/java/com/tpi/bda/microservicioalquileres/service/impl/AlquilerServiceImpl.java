@@ -87,6 +87,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
 
         alquiler.setMonto(monto);
 
+        alquilerRepository.save(alquiler);
         return alquiler;
 
     }
