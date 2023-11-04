@@ -1,23 +1,24 @@
 package com.tpi.bda.microservicioestaciones.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "ESTACIONES")
 public class Estacion {
     @Id
-    @GeneratedValue(generator = "ESTACIONES")
-    @TableGenerator(name = "ESTACIONES", table = "sqlite_sequence",
-            pkColumnName = "name", valueColumnName = "seq",
-            pkColumnValue = "id",
-            initialValue = 1, allocationSize = 1)
+//    @GeneratedValue(generator = "ESTACIONES")
+//    @TableGenerator(name = "ESTACIONES", table = "sqlite_sequence",
+//            pkColumnName = "name", valueColumnName = "seq",
+//            pkColumnValue = "id",
+//            initialValue = 1, allocationSize = 1)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(name = "NOMBRE")

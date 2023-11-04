@@ -12,4 +12,6 @@ public interface IEstacionService {
     Estacion findEstacionById(long idEstacion);
     
     double calularDistanciaEstaciones(long idEstacion1, long idEstacion2);
+
+    Estacion crearEstacion(Estacion estacion);
 }

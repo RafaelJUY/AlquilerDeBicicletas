@@ -1,13 +1,17 @@
 package com.tpi.bda.microservicioestaciones.cotroller;
 
+import com.tpi.bda.microservicioestaciones.dto.EstacionDto;
 import com.tpi.bda.microservicioestaciones.model.entity.Estacion;
 import com.tpi.bda.microservicioestaciones.service.IEstacionService;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import static com.tpi.bda.microservicioestaciones.service.convert.EstacionEntityDto.*;
 
 @RestController
 @RequestMapping("/api/estaciones")
@@ -51,5 +55,13 @@ public class EstacionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+    }
+
+    @PostMapping
+    public ResponseEntity<Estacion> crearEstacion(@RequestBody EstacionDto estacionDto){
+        Estacion estacion = estacionDtoAEntidad(estacionDto);
+
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(estacionService.crearEstacion(estacion));
     }
 }

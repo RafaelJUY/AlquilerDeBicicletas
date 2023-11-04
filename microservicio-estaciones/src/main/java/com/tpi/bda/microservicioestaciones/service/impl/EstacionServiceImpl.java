@@ -5,6 +5,7 @@ import com.tpi.bda.microservicioestaciones.repository.IEstacionRepository;
 import com.tpi.bda.microservicioestaciones.service.IEstacionService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,7 +40,7 @@ public class EstacionServiceImpl implements IEstacionService {
 
         return estacionCercana;
     }
-    
+    @Override
     public double calularDistanciaEstaciones(long idEstacion1, long idEstacion2){
         Estacion estacion1 = findEstacionById(idEstacion1);
         Estacion estacion2 = findEstacionById(idEstacion2);
@@ -49,8 +50,15 @@ public class EstacionServiceImpl implements IEstacionService {
         
         return distancia;
     }
-
+    @Override
     public Estacion findEstacionById(long idEstacion) {
         return estacionRepository.findById(idEstacion).orElseThrow();
+    }
+
+    @Override
+    public Estacion crearEstacion(Estacion estacion) {
+        estacion.setId(estacionRepository.getMaxId() + 1);
+        estacion.setFechaHoraCreacion(LocalDateTime.now());
+        return estacionRepository.save(estacion);
     }
 }
