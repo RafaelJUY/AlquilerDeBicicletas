@@ -65,27 +65,17 @@ public class EstacionController {
 //    }
 
     @GetMapping("/distanciaEntreEstaciones/{idEstacion1}/{idEstacion2}")
-    public ResponseEntity<Double> calularDistanciaEstaciones(@PathVariable("idEstacion1") long idEstacion1,
+    public ResponseEntity<String> calularDistanciaEstaciones(@PathVariable("idEstacion1") long idEstacion1,
                                                              @PathVariable("idEstacion2") long idEstacion2) {
-        try {
-            double distancia = estacionService.calularDistancia(estacionService.findEstacionById(idEstacion1),
+        double distancia = estacionService.calularDistancia(estacionService.findEstacionById(idEstacion1),
                     estacionService.findEstacionById(idEstacion2));
-            return ResponseEntity.ok(distancia);
-        }catch (NoSuchElementException ex){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(String.format("%.2f metros", distancia));
     }
 
     @GetMapping("/{idEstacion}")
     public ResponseEntity<Estacion> findEstacionById(@PathVariable("idEstacion") long idEstacion) {
-        try {
-            Estacion estacion = estacionService.findEstacionById(idEstacion);
-            return ResponseEntity.ok(estacion);
-        }
-        catch (NoSuchElementException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
+        Estacion estacion = estacionService.findEstacionById(idEstacion);
+        return ResponseEntity.ok(estacion);
     }
 
     @PostMapping

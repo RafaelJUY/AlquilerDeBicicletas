@@ -1,5 +1,7 @@
 package com.tpi.bda.microservicioestaciones.service.impl;
 
+import com.tpi.bda.microservicioestaciones.exception.personalized.EntidadNoExistenteException;
+import com.tpi.bda.microservicioestaciones.exception.personalized.SinRegistrosDisponiblesExeption;
 import com.tpi.bda.microservicioestaciones.model.Ubicacion;
 import com.tpi.bda.microservicioestaciones.model.entity.Estacion;
 import com.tpi.bda.microservicioestaciones.repository.IEstacionRepository;
@@ -45,6 +47,10 @@ public class EstacionServiceImpl implements IEstacionService {
         public Estacion findEstacionCercana(Ubicacion ubicacion) {
             List<Estacion> estaciones = this.findAll();
 
+            if (estaciones.isEmpty()){
+                throw new SinRegistrosDisponiblesExeption();
+            }
+
             Estacion estacionCercana = estaciones.get(0);
             double menorDistancia = calularDistancia(ubicacion, estacionCercana);
 
@@ -86,7 +92,7 @@ public class EstacionServiceImpl implements IEstacionService {
     }
     @Override
     public Estacion findEstacionById(long idEstacion) {
-        return estacionRepository.findById(idEstacion).orElseThrow();
+        return estacionRepository.findById(idEstacion).orElseThrow(EntidadNoExistenteException::new);
     }
 
     @Override
