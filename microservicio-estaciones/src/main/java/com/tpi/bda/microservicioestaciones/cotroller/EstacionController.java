@@ -4,6 +4,7 @@ import com.tpi.bda.microservicioestaciones.dto.EstacionDto;
 import com.tpi.bda.microservicioestaciones.model.Ubicacion;
 import com.tpi.bda.microservicioestaciones.model.entity.Estacion;
 import com.tpi.bda.microservicioestaciones.service.IEstacionService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,7 +80,7 @@ public class EstacionController {
     }
 
     @PostMapping
-    public ResponseEntity<Estacion> crearEstacion(@RequestBody EstacionDto estacionDto){
+    public ResponseEntity<Estacion> crearEstacion(@Valid @RequestBody EstacionDto estacionDto){
         Estacion estacion = estacionDtoAEntidad(estacionDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(estacionService.crearEstacion(estacion));
     }
