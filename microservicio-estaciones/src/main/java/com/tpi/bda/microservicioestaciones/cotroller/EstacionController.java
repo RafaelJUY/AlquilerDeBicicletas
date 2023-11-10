@@ -66,11 +66,11 @@ public class EstacionController {
 //    }
 
     @GetMapping("/distanciaEntreEstaciones/{idEstacion1}/{idEstacion2}")
-    public ResponseEntity<String> calularDistanciaEstaciones(@PathVariable("idEstacion1") long idEstacion1,
+    public ResponseEntity<Double> calularDistanciaEstaciones(@PathVariable("idEstacion1") long idEstacion1,
                                                              @PathVariable("idEstacion2") long idEstacion2) {
         double distancia = estacionService.calularDistancia(estacionService.findEstacionById(idEstacion1),
                     estacionService.findEstacionById(idEstacion2));
-        return ResponseEntity.ok(String.format("%.2f metros", distancia));
+        return ResponseEntity.ok(distancia);
     }
 
     @GetMapping("/{idEstacion}")
