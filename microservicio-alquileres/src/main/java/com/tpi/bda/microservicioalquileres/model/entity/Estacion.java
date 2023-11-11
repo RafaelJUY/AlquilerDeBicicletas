@@ -1,4 +1,4 @@
-package com.tpi.bda.microservicioalquileres.model;
+package com.tpi.bda.microservicioalquileres.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

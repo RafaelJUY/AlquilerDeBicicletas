@@ -1,21 +1,20 @@
 package com.tpi.bda.microservicioalquileres.service.impl;
 
-import com.tpi.bda.microservicioalquileres.model.Estacion;
+import com.tpi.bda.microservicioalquileres.dto.AlquilerDto;
+import com.tpi.bda.microservicioalquileres.dto.ConversionDto;
+import com.tpi.bda.microservicioalquileres.dto.RespuestaConversionDto;
+import com.tpi.bda.microservicioalquileres.model.entity.Estacion;
 import com.tpi.bda.microservicioalquileres.model.entity.Alquiler;
 import com.tpi.bda.microservicioalquileres.model.entity.Tarifa;
 import com.tpi.bda.microservicioalquileres.repository.IAlquilerRepository;
 import com.tpi.bda.microservicioalquileres.service.IAlquilerService;
 import com.tpi.bda.microservicioalquileres.service.ITarifaService;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.ConnectException;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -48,11 +47,15 @@ public class AlquilerServiceImpl implements IAlquilerService {
         return this.alquilerRepository.save(a);
     }
 
-    public Alquiler finalizarAlquiler(long idAlquiler, long idEstacion){
+    public AlquilerDto finalizarAlquiler(long idAlquiler, long idEstacion, String moneda){
 
         Alquiler alquiler = alquilerRepository.findById(idAlquiler).orElseThrow();
         Tarifa tarifa = tarifaService.getTarifaDeHoy();
         Estacion estacion = buscarEstacion(idEstacion);
+
+        if (alquiler.getEstacionDevolucion() != null) {
+            return null;
+        }
 
         alquiler.setTarifa(tarifa);
         alquiler.setEstacionDevolucion(estacion);
@@ -87,9 +90,52 @@ public class AlquilerServiceImpl implements IAlquilerService {
 
         alquiler.setMonto(monto);
 
-        alquilerRepository.save(alquiler);
-        return alquiler;
+        // creacion del dto
+        AlquilerDto response = new AlquilerDto();
+        response.setEstacionRetiro(alquiler.getEstacionRetiro().getNombre());
+        response.setEstacionDevolucion(alquiler.getEstacionDevolucion().getNombre());
+        response.setFechaHoraRetiro(alquiler.getFechaHoraRetiro());
+        response.setFechaHoraDevolucion(alquiler.getFechaHoraDevolucion());
 
+        if (!moneda.equals("")) {
+            ConversionDto conversion = new ConversionDto(moneda, monto);
+            RespuestaConversionDto obtenerConversion = this.obtenerConversion(conversion);
+            response.setMoneda(obtenerConversion.getMoneda());
+            response.setMonto(obtenerConversion.getImporte());
+        }
+        else {
+            response.setMoneda("ARS");
+            response.setMonto(alquiler.getMonto());
+        }
+
+
+        alquilerRepository.save(alquiler);
+        return response;
+
+    }
+
+    public RespuestaConversionDto obtenerConversion(ConversionDto conversion) {
+        try {
+            // Creación de la instancia de RequestTemplate
+            RestTemplate template = new RestTemplate();
+
+            // Respuesta de la peticion
+            ResponseEntity<RespuestaConversionDto> res = template.postForEntity("http://34.82.105.125:8080/convertir", conversion, RespuestaConversionDto.class);
+
+            // Se comprueba si el código de repuesta es de la familia 200
+            if (res.getStatusCode().is2xxSuccessful()) {
+                //log.debug("Persona creada correctamente: {}", res.getBody());
+                return res.getBody();
+            } else {
+                //log.warn("Respuesta no exitosa: {}", res.getStatusCode());
+
+            }
+        } catch (HttpClientErrorException ex) {
+            throw new NoSuchElementException();
+            // La repuesta no es exitosa.
+            //log.error("Error en la petición", ex);
+        }
+        return null;
     }
 
     public Estacion buscarEstacion(Long idEstacion) throws ResourceAccessException{
