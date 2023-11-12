@@ -29,7 +29,7 @@ public class AlquilerController {
 
     @PostMapping
     public ResponseEntity<Alquiler> iniciarAlquiler(@RequestParam long idEstacion,
-                                                    @RequestParam long idCliente) {
+                                                    @RequestParam String idCliente) {
         try {
             Alquiler alquiler = alquilerService.iniciarAlquiler(idEstacion, idCliente);
             return ResponseEntity.status(HttpStatus.CREATED).body(alquiler);

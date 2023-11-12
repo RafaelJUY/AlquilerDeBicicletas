@@ -35,12 +35,12 @@ public class AlquilerServiceImpl implements IAlquilerService {
     }
 
     @Override
-    public Alquiler iniciarAlquiler(long idEstacion, long idCliente) throws NoSuchElementException, ResourceAccessException {
+    public Alquiler iniciarAlquiler(long idEstacion, String idCliente) throws NoSuchElementException, ResourceAccessException {
 
         Estacion e = this.buscarEstacion(idEstacion);
         LocalDateTime fechaHoraActual = LocalDateTime.now();
         Alquiler a = new Alquiler();
-        a.setIdCliente(String.valueOf(idCliente));
+        a.setIdCliente(idCliente);
         a.setEstacionRetiro(e);
         a.setFechaHoraRetiro(fechaHoraActual);
         a.setEstado(1);

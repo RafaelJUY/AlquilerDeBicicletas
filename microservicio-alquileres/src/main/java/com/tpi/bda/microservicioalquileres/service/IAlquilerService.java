@@ -12,7 +12,7 @@ import java.util.List;
 public interface IAlquilerService {
     List<Alquiler> findAll();
 
-    Alquiler iniciarAlquiler(long idEstacion, long idCliente) throws ResourceAccessException;
+    Alquiler iniciarAlquiler(long idEstacion, String idCliente) throws ResourceAccessException;
 
     AlquilerDto finalizarAlquiler(long idAlquiler, long idEstacion, String moneda);
 
