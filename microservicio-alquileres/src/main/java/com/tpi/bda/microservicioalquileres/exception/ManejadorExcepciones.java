@@ -1,6 +1,7 @@
 package com.tpi.bda.microservicioalquileres.exception;
 
 import com.tpi.bda.microservicioalquileres.exception.personalized.EntidadNoExistenteException;
+import com.tpi.bda.microservicioalquileres.exception.personalized.ServicioRemotoException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.SinRegistrosDisponiblesExeption;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +23,10 @@ public class ManejadorExcepciones {
     @ExceptionHandler(SinRegistrosDisponiblesExeption.class)
     public ResponseEntity<String> manejadorSinRegistrosDisponiblesExeption(SinRegistrosDisponiblesExeption ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ServicioRemotoException.class)
+    public ResponseEntity<String> manejadorServicioRemotoException(ServicioRemotoException ex){
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ex.getMessage());
     }
 }

@@ -24,6 +24,7 @@ public class Estacion {
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "ESTACIONES")
+@ToString
 public class Estacion {
     @Id
     @GeneratedValue(generator = "ESTACIONES")

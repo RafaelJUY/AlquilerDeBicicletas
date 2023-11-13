@@ -43,10 +43,10 @@ public class AlquilerController {
     }
 
 
-    @PatchMapping
+    /*@PatchMapping
     public ResponseEntity<AlquilerDto> finalizarAlquiler(@RequestParam("idAlquiler") long idAlquiler,
                                                          @RequestParam("idEstacion") long idEstacion,
-                                                         @RequestParam("moneda") String moneda){
+                                                         @RequestParam(value = "moneda", defaultValue = "ARS") String moneda){
         try {
             AlquilerDto alquiler = alquilerService.finalizarAlquiler(idAlquiler, idEstacion, moneda);
             if (alquiler == null) {
@@ -63,6 +63,17 @@ public class AlquilerController {
         }
 
 
+    }*/
+    @PatchMapping
+    public ResponseEntity<AlquilerDto> finalizarAlquiler(@RequestParam("idAlquiler") long idAlquiler,
+                                                         @RequestParam("idEstacion") long idEstacion,
+                                                         @RequestParam(value = "moneda", defaultValue = "ARS") String moneda){
+
+//        AlquilerDto alquilerDto = alquilerService.mostrarAlquilerFinalizado(alquilerService.findById(idAlquiler), moneda);
+//        return ResponseEntity.status(HttpStatus.OK).body(alquilerDto);
+
+        AlquilerDto alquilerDto = alquilerService.finalizarAlquiler(idAlquiler, idEstacion, moneda);
+        return ResponseEntity.status(HttpStatus.OK).body(alquilerDto);
     }
 
     @GetMapping("/filtrar")

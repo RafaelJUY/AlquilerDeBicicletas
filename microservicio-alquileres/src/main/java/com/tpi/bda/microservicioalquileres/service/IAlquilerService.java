@@ -14,10 +14,14 @@ public interface IAlquilerService {
 
     Alquiler iniciarAlquiler(long idEstacion, String idCliente) throws ResourceAccessException;
 
+    /*AlquilerDto finalizarAlquiler(long idAlquiler, long idEstacion, String moneda);*/
     AlquilerDto finalizarAlquiler(long idAlquiler, long idEstacion, String moneda);
+    AlquilerDto mostrarAlquilerFinalizado(Alquiler alquiler, String moneda);
 
     List<Alquiler> obtenerAlquileresPorMontos(double montoMin, double montoMax);
 
     RespuestaConversionDto obtenerConversion(ConversionDto conversionDto);
+
+    Alquiler findById(long idAlquiler);
 
 }
