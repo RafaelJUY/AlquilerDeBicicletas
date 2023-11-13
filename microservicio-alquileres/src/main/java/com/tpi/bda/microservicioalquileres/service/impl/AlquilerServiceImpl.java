@@ -6,6 +6,7 @@ import com.tpi.bda.microservicioalquileres.dto.RespuestaConversionDto;
 import com.tpi.bda.microservicioalquileres.exception.personalized.EntidadNoExistenteException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.ServicioRemotoException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.SinRegistrosDisponiblesExeption;
+import com.tpi.bda.microservicioalquileres.model.EstadoAlquiler;
 import com.tpi.bda.microservicioalquileres.model.TipoMoneda;
 import com.tpi.bda.microservicioalquileres.model.entity.Estacion;
 import com.tpi.bda.microservicioalquileres.model.entity.Alquiler;
@@ -57,7 +58,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
         a.setIdCliente(idCliente);
         a.setEstacionRetiro(e);
         a.setFechaHoraRetiro(fechaHoraActual);
-        a.setEstado(1);
+        a.setEstado(EstadoAlquiler.INICIADO.getId());
         return this.alquilerRepository.save(a);
     }
 
@@ -132,7 +133,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
     public AlquilerDto finalizarAlquiler(long idAlquiler, long idEstacionDevolucion, String moneda){
         Alquiler alquiler = this.findById(idAlquiler);
 
-        if (alquiler.getEstado() == 2){
+        if (alquiler.getEstado() == EstadoAlquiler.FINALIZADO.getId()){
             throw new SinRegistrosDisponiblesExeption("No existe el alquiler activo para poder finalizarlo");
         }
 
@@ -144,7 +145,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
 
         alquiler.setTarifa(tarifa);
         alquiler.setEstacionDevolucion(estacion);
-        alquiler.setEstado(2);
+        alquiler.setEstado(EstadoAlquiler.FINALIZADO.getId());
         alquiler.setFechaHoraDevolucion(LocalDateTime.now());
         alquiler.setMonto(calcularMonto(alquiler, tarifa));
 
