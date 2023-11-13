@@ -13,6 +13,9 @@ import com.tpi.bda.microservicioalquileres.model.entity.Tarifa;
 import com.tpi.bda.microservicioalquileres.repository.IAlquilerRepository;
 import com.tpi.bda.microservicioalquileres.service.IAlquilerService;
 import com.tpi.bda.microservicioalquileres.service.ITarifaService;
+import com.tpi.bda.microservicioalquileres.servicioRemoto.ServicioRemotoEstacion;
+import com.tpi.bda.microservicioalquileres.servicioRemoto.ServicioRemotoMoneda;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -25,6 +28,11 @@ import java.util.*;
 
 @Service
 public class AlquilerServiceImpl implements IAlquilerService {
+    @Autowired
+    ServicioRemotoEstacion servicioRemotoEstacion;
+
+    @Autowired
+    ServicioRemotoMoneda servicioRemotoMoneda;
     private final IAlquilerRepository alquilerRepository;
     private final ITarifaService tarifaService;
 
@@ -41,7 +49,9 @@ public class AlquilerServiceImpl implements IAlquilerService {
     @Override
     public Alquiler iniciarAlquiler(long idEstacion, String idCliente) throws NoSuchElementException, ResourceAccessException {
 
-        Estacion e = this.buscarEstacion(idEstacion);
+//        Estacion e = this.buscarEstacion(idEstacion); // se cambia por llamada al servicio remoto de estacion
+        Estacion e = servicioRemotoEstacion.buscarEstacion(idEstacion);
+
         LocalDateTime fechaHoraActual = LocalDateTime.now();
         Alquiler a = new Alquiler();
         a.setIdCliente(idCliente);
@@ -126,7 +136,9 @@ public class AlquilerServiceImpl implements IAlquilerService {
             throw new SinRegistrosDisponiblesExeption("No existe el alquiler activo para poder finalizarlo");
         }
 
-        Estacion estacion = this.buscarEstacion(idEstacionDevolucion);
+//        Estacion estacion = this.buscarEstacion(idEstacionDevolucion); // se cambia por llamada al servicio remoto de estacion
+
+        Estacion estacion = servicioRemotoEstacion.buscarEstacion(idEstacionDevolucion);
 
         Tarifa tarifa = tarifaService.getTarifaDeHoy();
 
@@ -158,7 +170,9 @@ public class AlquilerServiceImpl implements IAlquilerService {
             response.setMonto(alquiler.getMonto());
         } else {
             ConversionDto conversion = new ConversionDto(moneda, alquiler.getMonto());
-            RespuestaConversionDto obtenerConversion = this.obtenerConversion(conversion);
+//            RespuestaConversionDto obtenerConversion = this.obtenerConversion(conversion); // Se remplaza por llamada a servicio remoto de moneda
+
+            RespuestaConversionDto obtenerConversion = servicioRemotoMoneda.obtenerConversion(conversion);
             response.setMoneda(obtenerConversion.getMoneda());
             response.setMonto(obtenerConversion.getImporte());
         }
@@ -197,7 +211,10 @@ public class AlquilerServiceImpl implements IAlquilerService {
         monto += tarifa.getMontoHora() * horas;
 
         // traer la distancia entre estaciones
-        double distancia = obtnerDistanciaAEstacionDevolucion(alquiler.getEstacionRetiro().getId(),
+
+//        double distancia = obtnerDistanciaAEstacionDevolucion(alquiler.getEstacionRetiro().getId(),
+//                alquiler.getEstacionDevolucion().getId()); // se cambia por llamada al servicio remoto de estacion
+        double distancia = servicioRemotoEstacion.obtenerDistanciaAEstacionDevolucion(alquiler.getEstacionRetiro().getId(),
                 alquiler.getEstacionDevolucion().getId());
         long distanciaEnKm = (long) distancia / 1000;
 
