@@ -2,7 +2,7 @@ package com.tpi.bda.microservicioestaciones.exception;
 
 
 import com.tpi.bda.microservicioestaciones.exception.personalized.EntidadNoExistenteException;
-import com.tpi.bda.microservicioestaciones.exception.personalized.SinRegistrosDisponiblesExeption;
+import com.tpi.bda.microservicioestaciones.exception.personalized.SinRegistrosDisponiblesException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,8 +20,8 @@ public class ManejadorExcepciones {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(SinRegistrosDisponiblesExeption.class)
-    public ResponseEntity<String> manejadorSinRegistrosDisponiblesExeption(SinRegistrosDisponiblesExeption ex){
+    @ExceptionHandler(SinRegistrosDisponiblesException.class)
+    public ResponseEntity<String> manejadorSinRegistrosDisponiblesExeption(SinRegistrosDisponiblesException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

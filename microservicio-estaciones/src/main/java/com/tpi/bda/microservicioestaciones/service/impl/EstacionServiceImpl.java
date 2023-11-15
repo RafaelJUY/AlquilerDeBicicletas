@@ -1,7 +1,7 @@
 package com.tpi.bda.microservicioestaciones.service.impl;
 
 import com.tpi.bda.microservicioestaciones.exception.personalized.EntidadNoExistenteException;
-import com.tpi.bda.microservicioestaciones.exception.personalized.SinRegistrosDisponiblesExeption;
+import com.tpi.bda.microservicioestaciones.exception.personalized.SinRegistrosDisponiblesException;
 import com.tpi.bda.microservicioestaciones.model.Ubicacion;
 import com.tpi.bda.microservicioestaciones.model.entity.Estacion;
 import com.tpi.bda.microservicioestaciones.repository.IEstacionRepository;
@@ -48,7 +48,7 @@ public class EstacionServiceImpl implements IEstacionService {
             List<Estacion> estaciones = this.findAll();
 
             if (estaciones.isEmpty()){
-                throw new SinRegistrosDisponiblesExeption();
+                throw new SinRegistrosDisponiblesException("No hay estaciones cargadas en Base de Datos");
             }
 
             Estacion estacionCercana = estaciones.get(0);
@@ -92,7 +92,9 @@ public class EstacionServiceImpl implements IEstacionService {
     }
     @Override
     public Estacion findEstacionById(long idEstacion) {
-        return estacionRepository.findById(idEstacion).orElseThrow(EntidadNoExistenteException::new);
+        return estacionRepository
+                .findById(idEstacion)
+                .orElseThrow(() -> new EntidadNoExistenteException("No existe la estación. \nEstación id: " + idEstacion ));
     }
 
     @Override

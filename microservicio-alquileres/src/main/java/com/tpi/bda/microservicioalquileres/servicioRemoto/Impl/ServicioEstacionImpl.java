@@ -33,13 +33,14 @@ public class ServicioEstacionImpl implements ServicioRemotoEstacion {
                     urlBase +"/{idEstacion}", Estacion.class, idEstacion
             );
             estacionOp = Optional.ofNullable(res.getBody());
-        } catch (HttpClientErrorException ex) { // En caso de no encontrar la estacion
+        } catch (HttpClientErrorException ex) { // En caso de no encontrar la estación
             estacionOp = Optional.empty();
-        } catch (ResourceAccessException ex){ // Si el servicio de estacion no esta en ejecucion
-            throw new ServicioRemotoException("Error al conectar con servicio de estacion");
+        } catch (ResourceAccessException ex){ // Si el servicio de estación no esta en ejecución
+            throw new ServicioRemotoException("Error al conectar con servicio de estación");
         }
 
-        return estacionOp.orElseThrow(() -> new EntidadNoExistenteException("No se pudo encontrar la estacion"));
+        return estacionOp.orElseThrow(() -> new EntidadNoExistenteException("No se pudo encontrar la estación. " +
+                "\nEstacion id: " + idEstacion));
     }
 
     public Double obtenerDistanciaAEstacionDevolucion(Long idEstacionRetiro, Long idEstacionDevolucion) {
@@ -60,10 +61,10 @@ public class ServicioEstacionImpl implements ServicioRemotoEstacion {
             );
             return res.getBody();
 
-        } catch (HttpClientErrorException ex) { // Si alguna estacion no existe
+        } catch (HttpClientErrorException ex) { // Si la estación no existe.
             throw new EntidadNoExistenteException("La estacion de devolucion no existe: \nid estacion = " + idEstacionDevolucion);
-        }catch (ResourceAccessException ex){ // Si el servicio de estacion no esta en ejecucion
-            throw new ServicioRemotoException("Error al conectar con servicio de estacion");
+        }catch (ResourceAccessException ex){ // Si el servicio de estación no esta en ejecución
+            throw new ServicioRemotoException("Error al conectar con servicio de estación");
         }
     }
 }

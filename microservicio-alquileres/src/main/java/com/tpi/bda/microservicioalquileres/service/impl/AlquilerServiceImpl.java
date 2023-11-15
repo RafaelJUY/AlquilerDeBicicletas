@@ -5,7 +5,7 @@ import com.tpi.bda.microservicioalquileres.dto.ConversionDto;
 import com.tpi.bda.microservicioalquileres.dto.RespuestaConversionDto;
 import com.tpi.bda.microservicioalquileres.exception.personalized.EntidadNoExistenteException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.ServicioRemotoException;
-import com.tpi.bda.microservicioalquileres.exception.personalized.SinRegistrosDisponiblesExeption;
+import com.tpi.bda.microservicioalquileres.exception.personalized.SinRegistrosDisponiblesException;
 import com.tpi.bda.microservicioalquileres.model.EstadoAlquiler;
 import com.tpi.bda.microservicioalquileres.model.TipoMoneda;
 import com.tpi.bda.microservicioalquileres.model.entity.Estacion;
@@ -135,7 +135,8 @@ public class AlquilerServiceImpl implements IAlquilerService {
         Alquiler alquiler = this.findById(idAlquiler);
 
         if (alquiler.getEstado() == EstadoAlquiler.FINALIZADO.getId()){
-            throw new SinRegistrosDisponiblesExeption("No existe el alquiler activo para poder finalizarlo");
+            throw new SinRegistrosDisponiblesException("El alquiler ya no se encuentra activo " +
+                    "para poder finalizarlo" + "Alquiler id: " + idAlquiler);
         }
 
 //        Estacion estacion = this.buscarEstacion(idEstacionDevolucion); // se cambia por llamada al servicio remoto de estacion
@@ -265,7 +266,9 @@ public class AlquilerServiceImpl implements IAlquilerService {
 
     @Override
     public Alquiler findById(long idAlquiler) {
-        return alquilerRepository.findById(idAlquiler).orElseThrow(EntidadNoExistenteException::new);
+        return alquilerRepository
+                .findById(idAlquiler)
+                .orElseThrow(() -> new EntidadNoExistenteException("No existe el alquiler. \nAlquiler id: " + idAlquiler ));
     }
 
 //    public RespuestaConversionDto obtenerConversion(ConversionDto conversion) {
@@ -292,7 +295,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
 //        }
 //        return null;
 //    }
-    public RespuestaConversionDto obtenerConversion(ConversionDto conversion) {
+    /*public RespuestaConversionDto obtenerConversion(ConversionDto conversion) {
         try {
             // Creación de la instancia de RequestTemplate
             RestTemplate template = new RestTemplate();
@@ -309,7 +312,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
             throw new ServicioRemotoException("Moneda no aceptada para conversion");
         }
         return null;
-    }
+    }*/
 
     /*public Estacion buscarEstacion(Long idEstacion) throws ResourceAccessException{
         // Creación de una instancia de RestTemplate
@@ -337,7 +340,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
         return null;
 
     }*/
-    public Estacion buscarEstacion(Long idEstacion){
+    /*public Estacion buscarEstacion(Long idEstacion){
         Optional<Estacion> estacionOp;
         // Creación de una instancia de RestTemplate
         try {
@@ -356,7 +359,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
         }
 
         return estacionOp.orElseThrow(() -> new EntidadNoExistenteException("No se pudo encontrar la estacion"));
-    }
+    }*/
 
     /*public Double buscarDistanciaEntreEstaciones(Long idEstacionRetiro, Long idEstacionDevolucion) {
         // Creación de una instancia de RestTemplate
@@ -392,7 +395,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
 
     }*/
 
-    public Double obtnerDistanciaAEstacionDevolucion(Long idEstacionRetiro, Long idEstacionDevolucion) {
+    /*public Double obtnerDistanciaAEstacionDevolucion(Long idEstacionRetiro, Long idEstacionDevolucion) {
         // Creación de una instancia de RestTemplate
         try {
             // Creación de la instancia de RequestTemplate
@@ -415,7 +418,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
         }catch (ResourceAccessException ex){ // Si el servicio de estacion no esta en ejecucion
             throw new ServicioRemotoException("Error al conectar con servicio de estacion");
         }
-    }
+    }*/
 
     public List<Alquiler> obtenerAlquileresPorMontos(double montoMin, double montoMax) {
         List<Alquiler> respuesta = new ArrayList<>();

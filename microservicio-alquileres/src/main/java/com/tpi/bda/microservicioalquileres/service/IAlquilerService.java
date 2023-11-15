@@ -20,7 +20,7 @@ public interface IAlquilerService {
 
     List<Alquiler> obtenerAlquileresPorMontos(double montoMin, double montoMax);
 
-    RespuestaConversionDto obtenerConversion(ConversionDto conversionDto);
+//    RespuestaConversionDto obtenerConversion(ConversionDto conversionDto);
 
     Alquiler findById(long idAlquiler);
 
