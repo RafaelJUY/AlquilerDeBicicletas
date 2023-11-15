@@ -23,11 +23,7 @@ public class ServicioEstacionImpl implements ServicioRemotoEstacion {
 
     public Estacion buscarEstacion(Long idEstacion){
         Optional<Estacion> estacionOp;
-        // Creación de una instancia de RestTemplate
         try {
-            // Creación de la instancia de RequestTemplate
-//            RestTemplate template = new RestTemplate();
-
             // Creación de la entidad a enviar
             ResponseEntity<Estacion> res = rt.getForEntity(
                     urlBase +"/{idEstacion}", Estacion.class, idEstacion
@@ -44,11 +40,7 @@ public class ServicioEstacionImpl implements ServicioRemotoEstacion {
     }
 
     public Double obtenerDistanciaAEstacionDevolucion(Long idEstacionRetiro, Long idEstacionDevolucion) {
-        // Creación de una instancia de RestTemplate
         try {
-            // Creación de la instancia de RequestTemplate
-//            RestTemplate template = new RestTemplate();
-
             // parametros
             HashMap<String, String> params = new HashMap<>();
             params.put("estacion1", idEstacionRetiro.toString());

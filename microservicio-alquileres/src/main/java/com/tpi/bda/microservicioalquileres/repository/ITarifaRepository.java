@@ -11,8 +11,6 @@ import java.util.List;
 @Repository
 public interface ITarifaRepository extends JpaRepository<Tarifa, Long> {
 
-    List<Tarifa> findTarifaByDefinicion(char definicion);
-
     @Query("FROM TARIFAS t WHERE t.definicion = 'C' AND t.diaMes = :dia AND t.mes = :mes AND t.anio = :anio")
     Tarifa obtenerTarifaConDescuento(@Param("dia") Integer dia,
                                      @Param("mes") Integer mes,

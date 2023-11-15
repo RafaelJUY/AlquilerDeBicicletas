@@ -5,21 +5,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-
-/*@Getter
-@Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class Estacion {
-    @EqualsAndHashCode.Include
-    private Long id;
-    private String nombre;
-    private LocalDateTime fechaHoraCreacion;
-    private double latitud;
-    private double longitud;
-}*/
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

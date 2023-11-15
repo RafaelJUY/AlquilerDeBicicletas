@@ -6,11 +6,8 @@ import com.tpi.bda.microservicioalquileres.service.IAlquilerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.ResourceAccessException;
 
-import java.net.ConnectException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/alquileres")
@@ -27,19 +24,6 @@ public class AlquilerController {
         return ResponseEntity.ok(values);
     }
 
-    /*@PostMapping
-    public ResponseEntity<Alquiler> iniciarAlquiler(@RequestParam long idEstacion,
-                                                    @RequestParam String idCliente) {
-        try {
-            Alquiler alquiler = alquilerService.iniciarAlquiler(idEstacion, idCliente);
-            return ResponseEntity.status(HttpStatus.CREATED).body(alquiler);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        } catch (ResourceAccessException ex) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        }
-    }*/
-
     @PostMapping
     public ResponseEntity<Alquiler> iniciarAlquiler(@RequestParam long idEstacion,
                                                     @RequestParam String idCliente) {
@@ -48,35 +32,10 @@ public class AlquilerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(alquiler);
     }
 
-
-    /*@PatchMapping
-    public ResponseEntity<AlquilerDto> finalizarAlquiler(@RequestParam("idAlquiler") long idAlquiler,
-                                                         @RequestParam("idEstacion") long idEstacion,
-                                                         @RequestParam(value = "moneda", defaultValue = "ARS") String moneda){
-        try {
-            AlquilerDto alquiler = alquilerService.finalizarAlquiler(idAlquiler, idEstacion, moneda);
-            if (alquiler == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-
-            return ResponseEntity.ok(alquiler);
-        }
-        catch (ResourceAccessException ex) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        }
-        catch (NoSuchElementException ex) {
-            return ResponseEntity.notFound().build();
-        }
-
-
-    }*/
     @PatchMapping
     public ResponseEntity<AlquilerDto> finalizarAlquiler(@RequestParam("idAlquiler") long idAlquiler,
                                                          @RequestParam("idEstacion") long idEstacion,
                                                          @RequestParam(value = "moneda", defaultValue = "ARS") String moneda){
-
-//        AlquilerDto alquilerDto = alquilerService.mostrarAlquilerFinalizado(alquilerService.findById(idAlquiler), moneda);
-//        return ResponseEntity.status(HttpStatus.OK).body(alquilerDto);
 
         AlquilerDto alquilerDto = alquilerService.finalizarAlquiler(idAlquiler, idEstacion, moneda);
         return ResponseEntity.status(HttpStatus.OK).body(alquilerDto);
