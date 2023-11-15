@@ -1,29 +1,15 @@
-package com.tpi.bda.microservicioalquileres.model;
+package com.tpi.bda.microservicioalquileres.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-
-/*@Getter
-@Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class Estacion {
-    @EqualsAndHashCode.Include
-    private Long id;
-    private String nombre;
-    private LocalDateTime fechaHoraCreacion;
-    private double latitud;
-    private double longitud;
-}*/
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "ESTACIONES")
+@ToString
 public class Estacion {
     @Id
     @GeneratedValue(generator = "ESTACIONES")

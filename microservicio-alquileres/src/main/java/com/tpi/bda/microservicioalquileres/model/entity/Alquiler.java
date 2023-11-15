@@ -1,6 +1,5 @@
 package com.tpi.bda.microservicioalquileres.model.entity;
 
-import com.tpi.bda.microservicioalquileres.model.Estacion;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,12 +29,10 @@ public class Alquiler {
 
     @JoinColumn(name = "ESTACION_RETIRO")
     @OneToOne
-//    @Transient
     private Estacion estacionRetiro;
 
     @JoinColumn(name = "ESTACION_DEVOLUCION")
     @OneToOne
-//    @Transient
     private Estacion estacionDevolucion;
 
     @Column(name = "FECHA_HORA_RETIRO")

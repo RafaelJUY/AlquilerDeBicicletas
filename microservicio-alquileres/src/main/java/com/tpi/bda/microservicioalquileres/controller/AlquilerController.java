@@ -1,15 +1,13 @@
 package com.tpi.bda.microservicioalquileres.controller;
 
+import com.tpi.bda.microservicioalquileres.dto.AlquilerDto;
 import com.tpi.bda.microservicioalquileres.model.entity.Alquiler;
 import com.tpi.bda.microservicioalquileres.service.IAlquilerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.ResourceAccessException;
 
-import java.net.ConnectException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/alquileres")
@@ -28,25 +26,19 @@ public class AlquilerController {
 
     @PostMapping
     public ResponseEntity<Alquiler> iniciarAlquiler(@RequestParam long idEstacion,
-                                                    @RequestParam long idCliente) {
-        try {
-            Alquiler alquiler = alquilerService.iniciarAlquiler(idEstacion, idCliente);
-            return ResponseEntity.status(HttpStatus.CREATED).body(alquiler);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        } catch (ResourceAccessException ex) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        }
+                                                    @RequestParam String idCliente) {
 
-
+        Alquiler alquiler = alquilerService.iniciarAlquiler(idEstacion, idCliente);
+        return ResponseEntity.status(HttpStatus.CREATED).body(alquiler);
     }
 
-
     @PatchMapping
-    public ResponseEntity<Alquiler> finalizarAlquiler(@RequestParam("idAlquiler") long idAlquiler,
-                                                      @RequestParam("idEstacion") long idEstacion){
-        Alquiler alquiler = alquilerService.finalizarAlquiler(idAlquiler, idEstacion);
-        return ResponseEntity.ok(alquiler);
+    public ResponseEntity<AlquilerDto> finalizarAlquiler(@RequestParam("idAlquiler") long idAlquiler,
+                                                         @RequestParam("idEstacion") long idEstacion,
+                                                         @RequestParam(value = "moneda", defaultValue = "ARS") String moneda){
+
+        AlquilerDto alquilerDto = alquilerService.finalizarAlquiler(idAlquiler, idEstacion, moneda);
+        return ResponseEntity.status(HttpStatus.OK).body(alquilerDto);
     }
 
     @GetMapping("/filtrar")

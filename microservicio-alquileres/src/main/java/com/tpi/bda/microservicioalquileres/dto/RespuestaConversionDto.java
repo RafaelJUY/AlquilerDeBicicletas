@@ -1,4 +1,4 @@
-package com.tpi.bda.microservicioestaciones.model;
+package com.tpi.bda.microservicioalquileres.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Ubicacion {
-    private double latitud;
-    private double longitud;
+public class RespuestaConversionDto {
+    private String moneda;
+    private double importe;
 }

@@ -13,11 +13,6 @@ import java.time.LocalDateTime;
 @Entity(name = "ESTACIONES")
 public class Estacion {
     @Id
-//    @GeneratedValue(generator = "ESTACIONES")
-//    @TableGenerator(name = "ESTACIONES", table = "sqlite_sequence",
-//            pkColumnName = "name", valueColumnName = "seq",
-//            pkColumnValue = "id",
-//            initialValue = 1, allocationSize = 1)
     @EqualsAndHashCode.Include
     private Long id;
 

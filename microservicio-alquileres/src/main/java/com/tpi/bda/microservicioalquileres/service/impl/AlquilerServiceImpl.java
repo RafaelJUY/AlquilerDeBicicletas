@@ -1,27 +1,37 @@
 package com.tpi.bda.microservicioalquileres.service.impl;
 
-import com.tpi.bda.microservicioalquileres.model.Estacion;
+import com.tpi.bda.microservicioalquileres.dto.AlquilerDto;
+import com.tpi.bda.microservicioalquileres.dto.ConversionDto;
+import com.tpi.bda.microservicioalquileres.dto.RespuestaConversionDto;
+import com.tpi.bda.microservicioalquileres.exception.personalized.DatosInconsistentesException;
+import com.tpi.bda.microservicioalquileres.exception.personalized.EntidadNoExistenteException;
+import com.tpi.bda.microservicioalquileres.exception.personalized.SinRegistrosDisponiblesException;
+import com.tpi.bda.microservicioalquileres.model.EstadoAlquiler;
+import com.tpi.bda.microservicioalquileres.model.TipoMoneda;
+import com.tpi.bda.microservicioalquileres.model.entity.Estacion;
 import com.tpi.bda.microservicioalquileres.model.entity.Alquiler;
 import com.tpi.bda.microservicioalquileres.model.entity.Tarifa;
 import com.tpi.bda.microservicioalquileres.repository.IAlquilerRepository;
 import com.tpi.bda.microservicioalquileres.service.IAlquilerService;
 import com.tpi.bda.microservicioalquileres.service.ITarifaService;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.tpi.bda.microservicioalquileres.servicioRemoto.ServicioRemotoEstacion;
+import com.tpi.bda.microservicioalquileres.servicioRemoto.ServicioRemotoMoneda;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.ConnectException;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.zip.DataFormatException;
 
 @Service
 public class AlquilerServiceImpl implements IAlquilerService {
+    @Autowired
+    ServicioRemotoEstacion servicioRemotoEstacion;
+
+    @Autowired
+    ServicioRemotoMoneda servicioRemotoMoneda;
     private final IAlquilerRepository alquilerRepository;
     private final ITarifaService tarifaService;
 
@@ -36,40 +46,102 @@ public class AlquilerServiceImpl implements IAlquilerService {
     }
 
     @Override
-    public Alquiler iniciarAlquiler(long idEstacion, long idCliente) throws NoSuchElementException, ResourceAccessException {
+    public Alquiler iniciarAlquiler(long idEstacion, String idCliente) throws NoSuchElementException, ResourceAccessException {
+        Estacion estacion = servicioRemotoEstacion.buscarEstacion(idEstacion);
 
-        Estacion e = this.buscarEstacion(idEstacion);
         LocalDateTime fechaHoraActual = LocalDateTime.now();
-        Alquiler a = new Alquiler();
-        a.setIdCliente(String.valueOf(idCliente));
-        a.setEstacionRetiro(e);
-        a.setFechaHoraRetiro(fechaHoraActual);
-        a.setEstado(1);
-        return this.alquilerRepository.save(a);
+        Alquiler alquiler = new Alquiler();
+
+        alquiler.setIdCliente(idCliente);
+        alquiler.setEstacionRetiro(estacion);
+        alquiler.setFechaHoraRetiro(fechaHoraActual);
+        alquiler.setEstado(EstadoAlquiler.INICIADO.getId());
+        return this.alquilerRepository.save(alquiler);
     }
 
-    public Alquiler finalizarAlquiler(long idAlquiler, long idEstacion){
+    @Override
+    public AlquilerDto finalizarAlquiler(long idAlquiler, long idEstacionDevolucion, String moneda){
+        Alquiler alquiler = this.findById(idAlquiler);
 
-        Alquiler alquiler = alquilerRepository.findById(idAlquiler).orElseThrow();
+        if (alquiler.getEstado() == EstadoAlquiler.FINALIZADO.getId()){
+            throw new DatosInconsistentesException("El alquiler ya fue finalizado previamente " +
+                    "Alquiler id: " + idAlquiler);
+        }
+        if (alquiler.getEstacionRetiro().getId() == idEstacionDevolucion) {
+            throw new DatosInconsistentesException("La estacion de devolucion no puede ser igual a la de retiro");
+        }
+
+        Estacion estacion = servicioRemotoEstacion.buscarEstacion(idEstacionDevolucion);
+
         Tarifa tarifa = tarifaService.getTarifaDeHoy();
-        Estacion estacion = buscarEstacion(idEstacion);
 
         alquiler.setTarifa(tarifa);
         alquiler.setEstacionDevolucion(estacion);
-        alquiler.setEstado(2);
+        alquiler.setEstado(EstadoAlquiler.FINALIZADO.getId());
         alquiler.setFechaHoraDevolucion(LocalDateTime.now());
+        alquiler.setMonto(calcularMonto(alquiler, tarifa));
 
-        // Calcular monto
-        double monto = 0;
-        // Sumar el monto fijo
-        monto += tarifa.getMontoFijoAlquiler();
-        long minutes = alquiler.getFechaHoraRetiro().until( alquiler.getFechaHoraDevolucion(), ChronoUnit.MINUTES );
+        alquiler = alquilerRepository.save(alquiler);
+        return mostrarAlquilerFinalizado(alquiler, moneda);
+    }
 
-        long horas = minutes / 60;
+    @Override
+    public AlquilerDto mostrarAlquilerFinalizado(Alquiler alquiler, String moneda){
+        if (!this.validarMoneda(moneda)){
+            moneda = "ARS";
+        }
+
+        // creacion del dto
+        AlquilerDto response = new AlquilerDto();
+        response.setEstacionRetiro(alquiler.getEstacionRetiro().getNombre());
+        response.setEstacionDevolucion(alquiler.getEstacionDevolucion().getNombre());
+        response.setFechaHoraRetiro(alquiler.getFechaHoraRetiro());
+        response.setFechaHoraDevolucion(alquiler.getFechaHoraDevolucion());
+
+        if (moneda.equals("ARS")) {
+            response.setMoneda(moneda);
+            response.setMonto(alquiler.getMonto());
+        } else {
+            ConversionDto conversion = new ConversionDto(moneda, alquiler.getMonto());
+
+            Optional<RespuestaConversionDto> respuestaOp = servicioRemotoMoneda.obtenerConversion(conversion);
+
+            if (respuestaOp.isPresent()){
+                RespuestaConversionDto obtenerConversion = respuestaOp.get();
+                response.setMoneda(obtenerConversion.getMoneda());
+                response.setMonto(obtenerConversion.getImporte());
+            }else {
+                moneda = "ARS";
+                response.setMoneda(moneda);
+                response.setMonto(alquiler.getMonto());
+            }
+        }
+
+        return response;
+    }
+
+    private boolean validarMoneda(String moneda){
+        boolean valida = false;
+
+        for (TipoMoneda tipo : TipoMoneda.values()) {
+            if (tipo.name().equals(moneda)) {
+                valida = true;
+                break;
+            }
+        }
+        return valida;
+    }
+
+    private double calcularMonto(Alquiler alquiler, Tarifa tarifa){
+        double monto = tarifa.getMontoFijoAlquiler();
+
+        long minutosTotales = alquiler.getFechaHoraRetiro().until( alquiler.getFechaHoraDevolucion(), ChronoUnit.MINUTES );
+
+        long horas = minutosTotales / 60;
 
         // Sumar el monto por la cantidad de minutos
-        if ((minutes % 60) < 31) { // si los minutos que no completan una hora son < 31 min
-            monto += tarifa.getMontoMinutoFraccion() * (minutes % 60);
+        if ((minutosTotales % 60) < 31) { // si los minutos que no completan una hora son < 31 min
+            monto += tarifa.getMontoMinutoFraccion() * (minutosTotales % 60);
         }
         else { // si son mas de 31 min se cuenta como hora completa
             horas += 1;
@@ -79,78 +151,20 @@ public class AlquilerServiceImpl implements IAlquilerService {
         monto += tarifa.getMontoHora() * horas;
 
         // traer la distancia entre estaciones
-        double distancia = buscarDistanciaEntreEstaciones(alquiler.getEstacionRetiro().getId(),
+        double distancia = servicioRemotoEstacion.obtenerDistanciaAEstacionDevolucion(alquiler.getEstacionRetiro().getId(),
                 alquiler.getEstacionDevolucion().getId());
         long distanciaEnKm = (long) distancia / 1000;
 
         monto += distanciaEnKm * tarifa.getMontokm();
 
-        alquiler.setMonto(monto);
-
-        alquilerRepository.save(alquiler);
-        return alquiler;
-
+        return monto;
     }
 
-    public Estacion buscarEstacion(Long idEstacion) throws ResourceAccessException{
-        // Creación de una instancia de RestTemplate
-        try {
-            // Creación de la instancia de RequestTemplate
-            RestTemplate template = new RestTemplate();
-
-            // Creación de la entidad a enviar
-            ResponseEntity<Estacion> res = template.getForEntity(
-                    "http://localhost:8001/api/estaciones/{idEstacion}", Estacion.class, idEstacion
-            );
-            // Se comprueba si el código de repuesta es de la familia 200
-            if (res.getStatusCode().is2xxSuccessful()) {
-                //log.debug("Persona creada correctamente: {}", res.getBody());
-                return res.getBody();
-            } else {
-                //log.warn("Respuesta no exitosa: {}", res.getStatusCode());
-
-            }
-        } catch (HttpClientErrorException ex) {
-            throw new NoSuchElementException();
-            // La repuesta no es exitosa.
-            //log.error("Error en la petición", ex);
-        }
-        return null;
-
-    }
-
-    public Double buscarDistanciaEntreEstaciones(Long idEstacionRetiro, Long idEstacionDevolucion) {
-        // Creación de una instancia de RestTemplate
-        try {
-            // Creación de la instancia de RequestTemplate
-            RestTemplate template = new RestTemplate();
-
-            // parametros
-            HashMap<String, String> params = new HashMap<>();
-            params.put("estacion1", idEstacionRetiro.toString());
-            params.put("estacion2", idEstacionDevolucion.toString());
-
-            // Creación de la entidad a enviar
-            String url = "http://localhost:8001/api/estaciones/distanciaEntreEstaciones/{estacion1}/{estacion2}";
-            ResponseEntity<Double> res = template.getForEntity(
-                    url, Double.class, params
-            );
-
-            // Se comprueba si el código de repuesta es de la familia 200
-            if (res.getStatusCode().is2xxSuccessful()) {
-                //log.debug("Persona creada correctamente: {}", res.getBody());
-                return res.getBody();
-            } else {
-                //log.warn("Respuesta no exitosa: {}", res.getStatusCode());
-
-            }
-        } catch (HttpClientErrorException ex) {
-            throw new NoSuchElementException();
-            // La repuesta no es exitosa.
-            //log.error("Error en la petición", ex);
-        }
-        return null;
-
+    @Override
+    public Alquiler findById(long idAlquiler) {
+        return alquilerRepository
+                .findById(idAlquiler)
+                .orElseThrow(() -> new EntidadNoExistenteException("No existe el alquiler. \nAlquiler id: " + idAlquiler ));
     }
 
     public List<Alquiler> obtenerAlquileresPorMontos(double montoMin, double montoMax) {
