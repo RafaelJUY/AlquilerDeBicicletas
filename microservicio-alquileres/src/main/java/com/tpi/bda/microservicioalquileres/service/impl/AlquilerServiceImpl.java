@@ -51,15 +51,16 @@ public class AlquilerServiceImpl implements IAlquilerService {
     public Alquiler iniciarAlquiler(long idEstacion, String idCliente) throws NoSuchElementException, ResourceAccessException {
 
 //        Estacion e = this.buscarEstacion(idEstacion); // se cambia por llamada al servicio remoto de estacion
-        Estacion e = servicioRemotoEstacion.buscarEstacion(idEstacion);
+        Estacion estacion = servicioRemotoEstacion.buscarEstacion(idEstacion);
 
         LocalDateTime fechaHoraActual = LocalDateTime.now();
-        Alquiler a = new Alquiler();
-        a.setIdCliente(idCliente);
-        a.setEstacionRetiro(e);
-        a.setFechaHoraRetiro(fechaHoraActual);
-        a.setEstado(EstadoAlquiler.INICIADO.getId());
-        return this.alquilerRepository.save(a);
+        Alquiler alquiler = new Alquiler();
+
+        alquiler.setIdCliente(idCliente);
+        alquiler.setEstacionRetiro(estacion);
+        alquiler.setFechaHoraRetiro(fechaHoraActual);
+        alquiler.setEstado(EstadoAlquiler.INICIADO.getId());
+        return this.alquilerRepository.save(alquiler);
     }
 
     /*public AlquilerDto finalizarAlquiler(long idAlquiler, long idEstacion, String moneda){

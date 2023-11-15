@@ -27,7 +27,7 @@ public class AlquilerController {
         return ResponseEntity.ok(values);
     }
 
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity<Alquiler> iniciarAlquiler(@RequestParam long idEstacion,
                                                     @RequestParam String idCliente) {
         try {
@@ -38,8 +38,14 @@ public class AlquilerController {
         } catch (ResourceAccessException ex) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
+    }*/
 
+    @PostMapping
+    public ResponseEntity<Alquiler> iniciarAlquiler(@RequestParam long idEstacion,
+                                                    @RequestParam String idCliente) {
 
+        Alquiler alquiler = alquilerService.iniciarAlquiler(idEstacion, idCliente);
+        return ResponseEntity.status(HttpStatus.CREATED).body(alquiler);
     }
 
 
