@@ -3,6 +3,7 @@ package com.tpi.bda.microservicioalquileres.service.impl;
 import com.tpi.bda.microservicioalquileres.dto.AlquilerDto;
 import com.tpi.bda.microservicioalquileres.dto.ConversionDto;
 import com.tpi.bda.microservicioalquileres.dto.RespuestaConversionDto;
+import com.tpi.bda.microservicioalquileres.exception.personalized.DatosInconsistentesException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.EntidadNoExistenteException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.SinRegistrosDisponiblesException;
 import com.tpi.bda.microservicioalquileres.model.EstadoAlquiler;
@@ -22,6 +23,7 @@ import org.springframework.web.client.ResourceAccessException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.zip.DataFormatException;
 
 @Service
 public class AlquilerServiceImpl implements IAlquilerService {
@@ -62,8 +64,11 @@ public class AlquilerServiceImpl implements IAlquilerService {
         Alquiler alquiler = this.findById(idAlquiler);
 
         if (alquiler.getEstado() == EstadoAlquiler.FINALIZADO.getId()){
-            throw new SinRegistrosDisponiblesException("El alquiler ya no se encuentra activo " +
-                    "para poder finalizarlo" + "Alquiler id: " + idAlquiler);
+            throw new DatosInconsistentesException("El alquiler ya fue finalizado previamente " +
+                    "Alquiler id: " + idAlquiler);
+        }
+        if (alquiler.getEstacionRetiro().getId() == idEstacionDevolucion) {
+            throw new DatosInconsistentesException("La estacion de devolucion no puede ser igual a la de retiro");
         }
 
         Estacion estacion = servicioRemotoEstacion.buscarEstacion(idEstacionDevolucion);

@@ -1,5 +1,6 @@
 package com.tpi.bda.microservicioalquileres.exception;
 
+import com.tpi.bda.microservicioalquileres.exception.personalized.DatosInconsistentesException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.EntidadNoExistenteException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.ServicioRemotoException;
 import com.tpi.bda.microservicioalquileres.exception.personalized.SinRegistrosDisponiblesException;
@@ -28,5 +29,10 @@ public class ManejadorExcepciones {
     @ExceptionHandler(ServicioRemotoException.class)
     public ResponseEntity<String> manejadorServicioRemotoException(ServicioRemotoException ex){
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DatosInconsistentesException.class)
+    public ResponseEntity<String> manejadorDatosInconsistentesException(DatosInconsistentesException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

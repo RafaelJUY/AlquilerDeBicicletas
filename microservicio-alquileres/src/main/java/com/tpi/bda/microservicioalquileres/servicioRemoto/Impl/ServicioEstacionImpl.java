@@ -42,9 +42,9 @@ public class ServicioEstacionImpl implements ServicioRemotoEstacion {
     public Double obtenerDistanciaAEstacionDevolucion(Long idEstacionRetiro, Long idEstacionDevolucion) {
         try {
             // parametros
-            HashMap<String, String> params = new HashMap<>();
-            params.put("estacion1", idEstacionRetiro.toString());
-            params.put("estacion2", idEstacionDevolucion.toString());
+            HashMap<String, Long> params = new HashMap<>();
+            params.put("estacion1", idEstacionRetiro);
+            params.put("estacion2", idEstacionDevolucion);
 
             // Creación de la entidad a enviar
             String url = urlBase + "/distanciaEntreEstaciones/{estacion1}/{estacion2}";
