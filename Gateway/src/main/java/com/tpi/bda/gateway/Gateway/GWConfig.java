@@ -33,12 +33,12 @@ public class GWConfig {
 
                         // Rutas para ADMINISTRADOR
                         .pathMatchers(HttpMethod.POST, "/api/estaciones").hasRole("ADMINISTRADOR")
-                        .pathMatchers("/api/alquileres").hasRole("ADMINISTRADOR")
+                        .pathMatchers(HttpMethod.GET,"/api/alquileres" ).hasRole("ADMINISTRADOR")
 
                         // Rutas para CLIENTE
-                        .pathMatchers("/api/estaciones/**").hasRole("CLIENTE")
-                        .pathMatchers(HttpMethod.POST, "/api/alquileres/").hasRole("CLIENTE")
-                        .pathMatchers(HttpMethod.PATCH, "/api/alquileres/").hasRole("CLIENTE")
+                        .pathMatchers(HttpMethod.GET,"/api/estaciones").hasRole("CLIENTE")
+                        .pathMatchers(HttpMethod.POST, "/api/alquileres").hasRole("CLIENTE")
+                        .pathMatchers(HttpMethod.PATCH, "/api/alquileres").hasRole("CLIENTE")
                         // Otras rutas permitidas para todos los roles autenticados
                         .anyExchange().authenticated()
 
