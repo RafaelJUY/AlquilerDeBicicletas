@@ -153,6 +153,7 @@ public class AlquilerServiceImpl implements IAlquilerService {
         return mostrarAlquilerFinalizado(alquiler, moneda);
     }
 
+/*
     @Override
     public AlquilerDto mostrarAlquilerFinalizado(Alquiler alquiler, String moneda){
         if (!this.validarMoneda(moneda)){
@@ -176,6 +177,43 @@ public class AlquilerServiceImpl implements IAlquilerService {
             RespuestaConversionDto obtenerConversion = servicioRemotoMoneda.obtenerConversion(conversion);
             response.setMoneda(obtenerConversion.getMoneda());
             response.setMonto(obtenerConversion.getImporte());
+        }
+
+        return response;
+    }
+*/
+
+    @Override
+    public AlquilerDto mostrarAlquilerFinalizado(Alquiler alquiler, String moneda){
+        if (!this.validarMoneda(moneda)){
+            moneda = "ARS";
+        }
+
+        // creacion del dto
+        AlquilerDto response = new AlquilerDto();
+        response.setEstacionRetiro(alquiler.getEstacionRetiro().getNombre());
+        response.setEstacionDevolucion(alquiler.getEstacionDevolucion().getNombre());
+        response.setFechaHoraRetiro(alquiler.getFechaHoraRetiro());
+        response.setFechaHoraDevolucion(alquiler.getFechaHoraDevolucion());
+
+        if (moneda.equals("ARS")) {
+            response.setMoneda(moneda);
+            response.setMonto(alquiler.getMonto());
+        } else {
+            ConversionDto conversion = new ConversionDto(moneda, alquiler.getMonto());
+//            RespuestaConversionDto obtenerConversion = this.obtenerConversion(conversion); // Se remplaza por llamada a servicio remoto de moneda
+
+            Optional<RespuestaConversionDto> respuestaOp = servicioRemotoMoneda.obtenerConversion(conversion);
+
+            if (respuestaOp.isPresent()){
+                RespuestaConversionDto obtenerConversion = respuestaOp.get();
+                response.setMoneda(obtenerConversion.getMoneda());
+                response.setMonto(obtenerConversion.getImporte());
+            }else {
+                moneda = "ARS";
+                response.setMoneda(moneda);
+                response.setMonto(alquiler.getMonto());
+            }
         }
 
         return response;
