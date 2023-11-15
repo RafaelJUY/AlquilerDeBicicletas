@@ -7,6 +7,6 @@ import java.util.List;
 public interface ITarifaService {
     List<Tarifa> getAll();
 
-    List<Tarifa> findByDefinicion(char definicion);
+    /*List<Tarifa> findByDefinicion(char definicion);*/
     Tarifa getTarifaDeHoy();
 }

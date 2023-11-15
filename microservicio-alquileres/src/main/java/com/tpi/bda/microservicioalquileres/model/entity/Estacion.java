@@ -1,4 +1,4 @@
-package com.tpi.bda.microservicioalquileres.model;
+package com.tpi.bda.microservicioalquileres.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,6 +24,7 @@ public class Estacion {
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "ESTACIONES")
+@ToString
 public class Estacion {
     @Id
     @GeneratedValue(generator = "ESTACIONES")

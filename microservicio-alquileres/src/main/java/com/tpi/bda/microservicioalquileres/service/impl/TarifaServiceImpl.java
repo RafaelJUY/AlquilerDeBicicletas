@@ -22,11 +22,11 @@ public class TarifaServiceImpl implements ITarifaService {
         return this.tarifaRepository.findAll();
     }
 
-    public List<Tarifa> findByDefinicion(char definicion) {
+    /*public List<Tarifa> findByDefinicion(char definicion) {
         return this.tarifaRepository.findTarifaByDefinicion(definicion);
-    }
+    }*/
 
-    public Tarifa getTarifaDeHoy(){
+    /*public Tarifa getTarifaDeHoy(){
         int diaHoy = LocalDateTime.now().getDayOfMonth();
         int mesHoy = LocalDateTime.now().getMonth().getValue();
         int anioHoy = LocalDateTime.now().getYear();
@@ -50,5 +50,29 @@ public class TarifaServiceImpl implements ITarifaService {
             return tarifa;
         }
 
+    }*/
+
+    public Tarifa getTarifaDeHoy(){
+        Tarifa tarifaDeHoy;
+        LocalDateTime fechaHoy = LocalDateTime.now();
+
+        int diaHoy = fechaHoy.getDayOfMonth();
+        int mesHoy = fechaHoy.getMonth().getValue();
+        int anioHoy = fechaHoy.getYear();
+
+        tarifaDeHoy = this.obtenerTarifaConDescuento(diaHoy, mesHoy, anioHoy);
+        if (tarifaDeHoy == null){
+            int diaDeLaSemana = fechaHoy.getDayOfWeek().getValue();
+            tarifaDeHoy = this.obtenerTarifaSinDescuento(diaDeLaSemana);
+        }
+        return tarifaDeHoy;
+    }
+
+    private Tarifa obtenerTarifaConDescuento(int dia, int mes, int anio){
+        return tarifaRepository.obtenerTarifaConDescuento(dia, mes, anio);
+    }
+
+    private Tarifa obtenerTarifaSinDescuento(int diaSemana){
+        return tarifaRepository.obtnerTarifaSinDescuento(diaSemana);
     }
 }
