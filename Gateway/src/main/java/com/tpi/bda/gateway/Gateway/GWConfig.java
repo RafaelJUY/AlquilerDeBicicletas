@@ -35,7 +35,7 @@ public class GWConfig {
 
                         // Rutas para ADMINISTRADOR
                         .pathMatchers(HttpMethod.POST, "/api/estaciones").hasRole("ADMINISTRADOR")
-                        .pathMatchers(HttpMethod.GET,"/api/alquileres" ).hasRole("ADMINISTRADOR")
+                        .pathMatchers(HttpMethod.GET,"/api/alquileres/**" ).hasRole("ADMINISTRADOR")
 
                         // Rutas para CLIENTE
                         .pathMatchers(HttpMethod.GET,"/api/estaciones").hasRole("CLIENTE")
