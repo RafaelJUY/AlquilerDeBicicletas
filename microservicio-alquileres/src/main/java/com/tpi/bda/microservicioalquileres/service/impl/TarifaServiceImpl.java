@@ -22,6 +22,7 @@ public class TarifaServiceImpl implements ITarifaService {
         return this.tarifaRepository.findAll();
     }
 
+    @Override
     public Tarifa getTarifaDeHoy(){
         Tarifa tarifaDeHoy;
         LocalDateTime fechaHoy = LocalDateTime.now();
