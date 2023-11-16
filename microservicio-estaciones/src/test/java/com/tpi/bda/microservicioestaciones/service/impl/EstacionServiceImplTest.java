@@ -26,7 +26,7 @@ class EstacionServiceImplTest {
     private IEstacionRepository estacionRepository;
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
         estacionRepository = Mockito.mock(IEstacionRepository.class);
         estacionService = new EstacionServiceImpl(estacionRepository);
     }
@@ -123,8 +123,6 @@ class EstacionServiceImplTest {
         Mockito.when(estacionRepository.getMaxId()).thenReturn(100L); // Supongamos que getMaxId() devuelve 100
         Mockito.when(estacionRepository.save(any())).thenAnswer(invocation -> {
             Estacion estacionGuardada = invocation.getArgument(0);
-            estacionGuardada.setId(estacionRepository.getMaxId() + 1);
-            estacionGuardada.setFechaHoraCreacion(LocalDateTime.now());
             return estacionGuardada;
         });
 

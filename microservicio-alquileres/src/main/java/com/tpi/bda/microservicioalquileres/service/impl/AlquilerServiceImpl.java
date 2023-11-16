@@ -27,17 +27,19 @@ import java.util.zip.DataFormatException;
 
 @Service
 public class AlquilerServiceImpl implements IAlquilerService {
-    @Autowired
-    ServicioRemotoEstacion servicioRemotoEstacion;
+    //@Autowired
+    private final ServicioRemotoEstacion servicioRemotoEstacion;
 
-    @Autowired
-    ServicioRemotoMoneda servicioRemotoMoneda;
+    //@Autowired
+    private final ServicioRemotoMoneda servicioRemotoMoneda;
     private final IAlquilerRepository alquilerRepository;
     private final ITarifaService tarifaService;
 
-    public AlquilerServiceImpl(IAlquilerRepository alquilerRepository,ITarifaService tarifaService) {
+    public AlquilerServiceImpl(IAlquilerRepository alquilerRepository,ITarifaService tarifaService, ServicioRemotoEstacion servicioRemotoEstacion ,ServicioRemotoMoneda servicioRemotoMoneda) {
         this.alquilerRepository = alquilerRepository;
         this.tarifaService = tarifaService;
+        this.servicioRemotoEstacion = servicioRemotoEstacion;
+        this.servicioRemotoMoneda = servicioRemotoMoneda;
     }
 
     @Override

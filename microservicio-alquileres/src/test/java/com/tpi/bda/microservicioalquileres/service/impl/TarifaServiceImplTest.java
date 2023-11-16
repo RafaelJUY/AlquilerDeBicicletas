@@ -19,13 +19,13 @@ class TarifaServiceImplTest {
     private TarifaServiceImpl tarifaService;
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
         tarifaRepository = Mockito.mock(ITarifaRepository.class);
         tarifaService = new TarifaServiceImpl(tarifaRepository);
     }
 
     @Test
-    void getAll() {
+    void testGetAll() {
         Tarifa tarifaEsperada = new Tarifa(1L, 1, 'S', 1, null, null, null, 300, 6, 80, 240);
         Mockito.when(tarifaRepository.findAll()).thenReturn(List.of(tarifaEsperada));
 
